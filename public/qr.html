@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Share the Love – Ran & Rox</title>
   <link href="https://fonts.googleapis.com/css2?family=Sacramento&family=Montserrat:wght@300;400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -88,8 +87,10 @@
       margin-bottom: 26px;
     }
 
-    .qr-wrap canvas {
+    .qr-wrap img {
       display: block;
+      width: 175px;
+      height: 175px;
     }
 
     .couple-name {
@@ -172,7 +173,7 @@
     <p class="upload-sub">Scan the QR Code &amp; Upload</p>
 
     <div class="qr-wrap">
-      <canvas id="qrCanvas"></canvas>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=175x175&margin=6&data=https://wedding-photos-dbc2.onrender.com" alt="QR Code" />
     </div>
 
     <p class="couple-name">Ran &amp; Rox</p>
@@ -185,18 +186,6 @@
     <a class="btn ghost" href="/">← Back to Upload</a>
   </div>
 
-  <script>
-    QRCode.toCanvas(
-      document.getElementById('qrCanvas'),
-      'https://wedding-photos-dbc2.onrender.com',
-      {
-        width: 175,
-        margin: 1,
-        color: { dark: '#000000', light: '#ffffff' }
-      },
-      function(err) { if (err) console.error(err); }
-    );
-  </script>
 
 </body>
 </html>
