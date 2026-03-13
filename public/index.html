@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <title>Rannel & Roxanne — Share Your Photos</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #fafafa;
+      --off-white: #f5f2ef;
+      --mid: #888;
+      --light: #ddd;
+      --gold: #c9a84c;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--off-white);
+      color: var(--black);
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: var(--black);
+      color: var(--white);
+      text-align: center;
+      padding: 56px 24px 64px;
+      position: relative;
+    }
+    .hero::before, .hero::after {
+      content: '';
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      width: 1px; background: rgba(255,255,255,0.12);
+    }
+    .hero::before { top: 0; height: 32px; }
+    .hero::after  { bottom: 0; height: 32px; }
+
+    .hero-ornament {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; margin-bottom: 24px;
+    }
+    .hero-ornament .line   { width: 60px; height: 1px; background: var(--gold); }
+    .hero-ornament .diamond { width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg); }
+
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2.4rem, 9vw, 5rem);
+      letter-spacing: 4px;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .hero h1 .amp { font-style: italic; color: var(--gold); }
+
+    .hero-divider {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin: 18px 0;
+    }
+    .hero-divider .h-line { width: 48px; height: 1px; background: rgba(255,255,255,0.2); }
+    .hero-divider .dot    { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.35); }
+
+    .hero .date {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-weight: 300;
+      font-size: 1.15rem; letter-spacing: 3px;
+      color: rgba(255,255,255,0.6);
+    }
+    .hero .tagline {
+      margin-top: 16px;
+      font-size: 0.65rem; font-weight: 300;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+    }
+
+    /* ── Main ── */
+    .main {
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    .section-label {
+      font-size: 0.62rem; font-weight: 500;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--mid); margin-bottom: 10px;
+    }
+
+    /* Name field */
+    .name-field { margin-bottom: 32px; }
+    .name-field label {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 1.15rem;
+      color: var(--black); margin-bottom: 10px;
+    }
+    .name-field input {
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid var(--light);
+      border-radius: 0;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 16px; /* prevents iOS zoom */
+      font-weight: 300; letter-spacing: 1px;
+      color: var(--black); background: var(--white);
+      outline: none; transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .name-field input:focus { border-color: var(--black); }
+    .name-field input::placeholder { color: #bbb; }
+
+    /* ── Upload Buttons ── */
+    .upload-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .action-btn {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 28px 16px;
+      border: 1px solid var(--light);
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      overflow: hidden;
+      -webkit-appearance: none;
+    }
+    .action-btn::before, .action-btn::after {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+    }
+    .action-btn::before { top: -1px; left: -1px; border-top: 2px solid var(--black); border-left: 2px solid var(--black); }
+    .action-btn::after  { bottom: -1px; right: -1px; border-bottom: 2px solid var(--black); border-right: 2px solid var(--black); }
+
+    .action-btn input[type="file"] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
+      width: 100%; height: 100%;
+      font-size: 0;
+    }
+    .action-btn:active { background: #f0ede9; }
+    .action-btn svg {
+      width: 36px; height: 36px;
+      stroke: var(--black); fill: none;
+      stroke-width: 1.2;
+    }
+    .action-btn span {
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--black);
+    }
+
+    /* Desktop drop zone (hidden on mobile) */
+    .drop-zone {
+      display: none;
+      border: 1px solid var(--light);
+      background: var(--white);
+      padding: 56px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      margin-bottom: 28px;
+    }
+    .drop-zone::before, .drop-zone::after,
+    .drop-zone .corner-tl, .drop-zone .corner-br {
+      content: ''; position: absolute; width: 18px; height: 18px;
+    }
+    .drop-zone::before { top: -1px; left: -1px; border-top: 2px solid var(--black); border-left: 2px solid var(--black); }
+    .drop-zone::after  { bottom: -1px; right: -1px; border-bottom: 2px solid var(--black); border-right: 2px solid var(--black); }
+    .drop-zone .corner-tl { top: -1px; right: -1px; border-top: 2px solid var(--black); border-right: 2px solid var(--black); }
+    .drop-zone .corner-br { bottom: -1px; left: -1px; border-bottom: 2px solid var(--black); border-left: 2px solid var(--black); }
+    .drop-zone:hover, .drop-zone.dragover { background: #f0ede9; border-color: var(--black); }
+    .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .drop-zone svg { width: 44px; height: 44px; stroke: var(--black); fill: none; stroke-width: 1; display: block; margin: 0 auto 16px; }
+    .drop-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; letter-spacing: 2px; margin-bottom: 10px; }
+    .drop-sub   { font-size: 0.68rem; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; color: var(--mid); line-height: 2; }
+
+    /* Show drop zone on desktop, hide action buttons */
+    @media (hover: hover) and (pointer: fine) {
+      .upload-actions { display: none; }
+      .drop-zone { display: block; }
+    }
+
+    /* Preview grid */
+    #preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+    .preview-item {
+      position: relative; aspect-ratio: 1;
+      background: var(--light); overflow: hidden;
+    }
+    .preview-item img, .preview-item video {
+      width: 100%; height: 100%;
+      object-fit: cover; filter: grayscale(15%);
+    }
+    .preview-item .remove-btn {
+      position: absolute; top: 4px; right: 4px;
+      background: var(--black); color: var(--white);
+      border: none; width: 24px; height: 24px;
+      font-size: 13px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .preview-item .video-badge {
+      position: absolute; bottom: 4px; left: 4px;
+      background: var(--black); color: var(--white);
+      font-size: 9px; letter-spacing: 1px;
+      text-transform: uppercase; padding: 2px 5px;
+    }
+
+    .file-count {
+      text-align: center;
+      font-size: 0.68rem; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--mid);
+      margin-bottom: 24px;
+    }
+    .file-count strong { color: var(--black); }
+
+    /* Upload button */
+    .upload-btn {
+      width: 100%; padding: 20px;
+      background: var(--black); color: var(--white);
+      border: none;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem; font-style: italic;
+      font-weight: 300; letter-spacing: 4px;
+      cursor: pointer; transition: all 0.25s;
+      text-transform: uppercase;
+      -webkit-appearance: none;
+    }
+    .upload-btn:active:not(:disabled) { background: #222; }
+    .upload-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* Progress */
+    .progress-wrap { display: none; margin-top: 24px; }
+    .progress-bar-bg { background: var(--light); height: 1px; margin-bottom: 14px; }
+    .progress-bar-fill { height: 100%; background: var(--black); width: 0%; transition: width 0.4s ease; }
+    .progress-text {
+      text-align: center; font-size: 0.68rem;
+      letter-spacing: 3px; text-transform: uppercase; color: var(--mid);
+    }
+
+    /* Results */
+    .result { display: none; margin-top: 32px; padding: 36px 24px; text-align: center; border: 1px solid; }
+    .result.success { border-color: var(--black); background: var(--white); }
+    .result.error   { border-color: #ccc; background: var(--white); }
+    .result-ornament { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 18px; }
+    .result-ornament .r-line   { width: 36px; height: 1px; background: currentColor; opacity: 0.25; }
+    .result-ornament .r-icon   { font-size: 20px; }
+    .result h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem; font-weight: 300; letter-spacing: 3px; margin-bottom: 10px;
+    }
+    .result p { font-size: 0.78rem; font-weight: 300; letter-spacing: 1px; color: var(--mid); line-height: 2; }
+    .upload-more-btn {
+      display: inline-block; margin-top: 22px;
+      padding: 13px 32px;
+      border: 1px solid var(--black); background: transparent;
+      color: var(--black);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 3px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+      -webkit-appearance: none;
+    }
+    .upload-more-btn:active { background: var(--black); color: var(--white); }
+
+    footer {
+      text-align: center; padding: 28px;
+      font-size: 0.62rem; font-weight: 300;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--mid); border-top: 1px solid var(--light);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="hero-ornament">
+      <div class="line"></div><div class="diamond"></div><div class="line"></div>
+    </div>
+    <h1>Rannel <span class="amp">&</span> Roxanne</h1>
+    <div class="hero-divider">
+      <div class="h-line"></div><div class="dot"></div><div class="h-line"></div>
+    </div>
+    <div class="date">April 17, 2025</div>
+    <div class="tagline">Share your memories with us</div>
+  </div>
+
+  <div class="main">
+
+    <div class="name-field">
+      <p class="section-label">Your Name</p>
+      <label for="guestName">So we know who to thank</label>
+      <input type="text" id="guestName" placeholder="e.g. Sarah & Mike"
+             maxlength="80" autocomplete="name" autocorrect="off" />
+    </div>
+
+    <p class="section-label">Your Photos &amp; Videos</p>
+
+    <!-- Mobile: two big tap buttons -->
+    <div class="upload-actions">
+      <div class="action-btn">
+        <input type="file" id="fileInputCamera"
+               accept="image/*,video/*" capture="environment" />
+        <svg viewBox="0 0 48 48"><path d="M24 30a7 7 0 1 0 0-14 7 7 0 0 0 0 14z"/><path d="M6 16h4l3-5h22l3 5h4a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V18a2 2 0 0 1 2-2z"/></svg>
+        <span>Take Photo</span>
+      </div>
+      <div class="action-btn">
+        <input type="file" id="fileInputGallery"
+               accept="image/*,video/*" multiple />
+        <svg viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="32" rx="1"/><circle cx="16" cy="20" r="3"/><polyline points="4,32 14,20 22,28 30,18 44,34"/></svg>
+        <span>Choose Photos</span>
+      </div>
+    </div>
+
+    <!-- Desktop: drag & drop -->
+    <div class="drop-zone" id="dropZone">
+      <div class="corner-tl"></div><div class="corner-br"></div>
+      <input type="file" id="fileInputDesktop" multiple accept="image/*,video/*" />
+      <svg viewBox="0 0 48 48"><rect x="4" y="10" width="40" height="30" rx="1"/><circle cx="18" cy="22" r="4"/><polyline points="4,34 14,22 22,30 30,20 44,36"/></svg>
+      <div class="drop-title">Drop Your Photos Here</div>
+      <div class="drop-sub">Or click to browse · Images &amp; videos welcome<br/>Up to 50 files · Max 50MB each</div>
+    </div>
+
+    <div id="preview-grid"></div>
+    <div class="file-count" id="fileCount" style="display:none"></div>
+
+    <button class="upload-btn" id="uploadBtn" disabled>Share With Us</button>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">Uploading...</div>
+    </div>
+
+    <div class="result success" id="successBox">
+      <div class="result-ornament">
+        <div class="r-line"></div><div class="r-icon">✦</div><div class="r-line"></div>
+      </div>
+      <h3>Thank You</h3>
+      <p id="successMsg"></p>
+      <button class="upload-more-btn" id="uploadMoreBtn">Upload More</button>
+    </div>
+
+    <div class="result error" id="errorBox">
+      <h3>Something Went Wrong</h3>
+      <p id="errorMsg">Please try again.</p>
+    </div>
+
+  </div>
+
+  <footer>Rannel &amp; Roxanne &nbsp;·&nbsp; April 17, 2025 &nbsp;·&nbsp; With Love</footer>
+
+  <script>
+    const previewGrid  = document.getElementById('preview-grid');
+    const fileCount    = document.getElementById('fileCount');
+    const uploadBtn    = document.getElementById('uploadBtn');
+    const progressWrap = document.getElementById('progressWrap');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const successBox   = document.getElementById('successBox');
+    const errorBox     = document.getElementById('errorBox');
+
+    let selectedFiles = [];
+
+    // Wire all file inputs
+    document.getElementById('fileInputCamera').addEventListener('change', e => addFiles(Array.from(e.target.files)));
+    document.getElementById('fileInputGallery').addEventListener('change', e => { addFiles(Array.from(e.target.files)); e.target.value = ''; });
+    document.getElementById('fileInputDesktop').addEventListener('change', e => { addFiles(Array.from(e.target.files)); e.target.value = ''; });
+
+    // Drag & drop (desktop only)
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); addFiles(Array.from(e.dataTransfer.files)); });
+
+    function addFiles(newFiles) {
+      const allowed = /^(image|video)\//;
+      selectedFiles = [...selectedFiles, ...newFiles.filter(f => allowed.test(f.type))].slice(0, 50);
+      renderPreviews();
+    }
+
+    function renderPreviews() {
+      previewGrid.innerHTML = '';
+      selectedFiles.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'preview-item';
+        const isVideo = file.type.startsWith('video/');
+        const url = URL.createObjectURL(file);
+
+        if (isVideo) {
+          const vid = document.createElement('video');
+          vid.src = url; vid.muted = true;
+          item.appendChild(vid);
+          const badge = document.createElement('span');
+          badge.className = 'video-badge'; badge.textContent = 'Video';
+          item.appendChild(badge);
+        } else {
+          const img = document.createElement('img');
+          img.src = url; img.alt = file.name;
+          item.appendChild(img);
+        }
+
+        const btn = document.createElement('button');
+        btn.className = 'remove-btn'; btn.innerHTML = '✕';
+        btn.onclick = () => { selectedFiles.splice(index, 1); renderPreviews(); };
+        item.appendChild(btn);
+        previewGrid.appendChild(item);
+      });
+
+      const count = selectedFiles.length;
+      if (count > 0) {
+        fileCount.style.display = 'block';
+        fileCount.innerHTML = `<strong>${count}</strong> file${count !== 1 ? 's' : ''} selected`;
+        uploadBtn.disabled = false;
+      } else {
+        fileCount.style.display = 'none';
+        uploadBtn.disabled = true;
+      }
+    }
+
+    uploadBtn.addEventListener('click', async () => {
+      const guestName = document.getElementById('guestName').value.trim() || 'Anonymous Guest';
+      if (selectedFiles.length === 0) return;
+
+      successBox.style.display = 'none';
+      errorBox.style.display = 'none';
+      uploadBtn.disabled = true;
+      progressWrap.style.display = 'block';
+      progressFill.style.width = '5%';
+      progressText.textContent = 'Preparing...';
+
+      const batchSize = 5;
+      let uploaded = 0;
+      const total = selectedFiles.length;
+
+      try {
+        for (let i = 0; i < total; i += batchSize) {
+          const batch = selectedFiles.slice(i, i + batchSize);
+          const formData = new FormData();
+          formData.append('guestName', guestName);
+          batch.forEach(f => formData.append('photos', f));
+
+          const res = await fetch('/upload', { method: 'POST', body: formData });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+          uploaded += batch.length;
+          progressFill.style.width = Math.round((uploaded / total) * 100) + '%';
+          progressText.textContent = `Uploading ${uploaded} of ${total}...`;
+        }
+
+        progressFill.style.width = '100%';
+        progressText.textContent = 'Complete';
+        setTimeout(() => {
+          progressWrap.style.display = 'none';
+          successBox.style.display = 'block';
+          document.getElementById('successMsg').textContent =
+            `${total} photo${total !== 1 ? 's' : ''} shared successfully. Rannel & Roxanne will treasure these forever.`;
+        }, 400);
+
+      } catch (err) {
+        progressWrap.style.display = 'none';
+        errorBox.style.display = 'block';
+        document.getElementById('errorMsg').textContent = err.message || 'Something went wrong. Please try again.';
+        uploadBtn.disabled = false;
+      }
+    });
+
+    document.getElementById('uploadMoreBtn').addEventListener('click', () => {
+      selectedFiles = [];
+      renderPreviews();
+      successBox.style.display = 'none';
+      document.getElementById('guestName').value = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

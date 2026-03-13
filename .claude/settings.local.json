@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(npm install:*)",
+      "Bash(cmd.exe /c \"npm install\")",
+      "Bash(cmd.exe /c \"npm install 2>&1\")",
+      "Bash(cmd.exe /c \"cd C:\\\\Users\\\\rannel.ponnen\\\\Wedding && npm install && echo DONE\")",
+      "Bash(cmd.exe /c \"cd C:\\\\Users\\\\rannel.ponnen\\\\Wedding && npm install\")",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(powershell.exe -Command \"Set-Location ''C:\\\\Users\\\\rannel.ponnen\\\\Wedding''; npm install; Write-Host ''DONE''\")",
+      "Bash(powershell.exe -Command \"Get-Command node -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(powershell.exe -Command \"Get-ChildItem ''C:\\\\Program Files\\\\nodejs\\\\'' -ErrorAction SilentlyContinue\")",
+      "Bash(powershell.exe -Command \"Set-Location ''C:\\\\Users\\\\rannel.ponnen\\\\Wedding''; & ''C:\\\\Program Files\\\\nodejs\\\\npm.cmd'' install; Write-Host ''DONE''\")",
+      "Bash(powershell.exe -Command \"New-Item -ItemType Directory -Force -Path ''C:\\\\Users\\\\rannel.ponnen\\\\Wedding\\\\public''\")",
+      "Bash(powershell.exe -Command \"Set-Location ''C:\\\\Users\\\\rannel.ponnen\\\\Wedding''; Start-Process -FilePath ''C:\\\\Program Files\\\\nodejs\\\\node.exe'' -ArgumentList ''server.js'' -WorkingDirectory ''C:\\\\Users\\\\rannel.ponnen\\\\Wedding''\")",
+      "Bash(powershell.exe -Command \"& ''C:\\\\Program Files\\\\nodejs\\\\npm.cmd'' install -g @railway/cli 2>&1\")",
+      "Bash(powershell.exe -Command \"iwr https://railway.com/install.ps1 -UseBasicParsing | iex\")",
+      "Bash(cmd.exe /c \"set PATH=C:\\\\Program Files\\\\nodejs;%PATH% && npm install -g @railway/cli\")",
+      "Bash(powershell.exe -Command \"Invoke-WebRequest -Uri ''https://github.com/railwayapp/cli/releases/latest/download/railway-x86_64-pc-windows-msvc.zip'' -OutFile ''C:\\\\Users\\\\rannel.ponnen\\\\Wedding\\\\railway.zip'' -UseBasicParsing; Write-Host ''Downloaded''\")",
+      "Bash(powershell.exe -Command \"Invoke-RestMethod -Uri ''https://api.github.com/repos/railwayapp/cli/releases/latest'' -UseBasicParsing | Select-Object -ExpandProperty assets | Where-Object { $_name -like ''*windows*'' } | Select-Object name, browser_download_url\")",
+      "Bash(powershell.exe -Command \"Get-Command git -ErrorAction SilentlyContinue; Get-Command gh -ErrorAction SilentlyContinue\")",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
