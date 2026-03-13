@@ -29,6 +29,21 @@ const upload = multer({
   },
 });
 
+// Separate multer instance for voice/video messages
+const messageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 200 * 1024 * 1024 }, // 200MB for video messages
+  fileFilter: (req, file, cb) => {
+    const isAudio = file.mimetype.startsWith('audio/');
+    const isVideo = file.mimetype.startsWith('video/');
+    if (isAudio || isVideo) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only audio and video files are allowed'));
+    }
+  },
+});
+
 app.use(express.static('public'));
 app.use(express.json());
 
@@ -107,10 +122,85 @@ app.get('/gallery', async (req, res) => {
   }
 });
 
-// QR code image endpoint
+// Voice / video message upload
+app.post('/message', messageUpload.single('recording'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No recording uploaded' });
+
+  const guestName = req.body.guestName || 'Anonymous Guest';
+  const messageType = req.body.messageType || 'voice'; // 'voice' | 'video'
+
+  try {
+    const result = await new Promise((resolve, reject) => {
+      const ext = req.file.mimetype.includes('mp4') ? 'mp4'
+                : req.file.mimetype.includes('ogg') ? 'ogg'
+                : 'webm';
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'rannel-roxanne-wedding/messages',
+          resource_type: 'video', // Cloudinary uses 'video' for audio too
+          public_id: `msg-${Date.now()}`,
+          format: ext,
+          context: {
+            guest_name: guestName,
+            message_type: messageType,
+            uploaded_at: new Date().toISOString(),
+          },
+          tags: ['wedding', 'message', messageType === 'video' ? 'video-message' : 'voice-message'],
+        },
+        (error, result) => { if (error) reject(error); else resolve(result); }
+      );
+      uploadStream.end(req.file.buffer);
+    });
+
+    res.json({ success: true, url: result.secure_url, publicId: result.public_id, duration: result.duration });
+  } catch (err) {
+    console.error('Message upload error:', err);
+    res.status(500).json({ error: 'Failed to save your message. Please try again.' });
+  }
+});
+
+// Messages admin endpoint — returns all voice/video messages
+app.get('/messages', async (req, res) => {
+  const adminKey = req.query.key;
+  if (adminKey !== process.env.ADMIN_KEY) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const results = await cloudinary.search
+      .expression('folder:rannel-roxanne-wedding/messages AND resource_type:video')
+      .sort_by('created_at', 'desc')
+      .with_field('context')
+      .with_field('tags')
+      .max_results(500)
+      .execute();
+
+    res.json({ count: results.resources.length, messages: results.resources });
+  } catch (err) {
+    console.error('Messages error:', err);
+    res.status(500).json({ error: 'Could not load messages' });
+  }
+});
+
+// QR code image endpoint — photo uploader
 app.get('/qr-image', async (req, res) => {
   const QRCode = require('qrcode');
   const url = process.env.PUBLIC_URL || 'https://wedding-photos-dbc2.onrender.com';
+  const buffer = await QRCode.toBuffer(url, {
+    width: 200,
+    margin: 1,
+    color: { dark: '#000000', light: '#ffffff' },
+  });
+  res.set('Content-Type', 'image/png');
+  res.set('Cache-Control', 'public, max-age=86400');
+  res.send(buffer);
+});
+
+// QR code image endpoint — voice/video message booth
+app.get('/qr-message-image', async (req, res) => {
+  const QRCode = require('qrcode');
+  const base = process.env.PUBLIC_URL || 'https://wedding-photos-dbc2.onrender.com';
+  const url = `${base}/message.html`;
   const buffer = await QRCode.toBuffer(url, {
     width: 200,
     margin: 1,
