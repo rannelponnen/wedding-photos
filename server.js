@@ -107,6 +107,20 @@ app.get('/gallery', async (req, res) => {
   }
 });
 
+// QR code image endpoint
+app.get('/qr-image', async (req, res) => {
+  const QRCode = require('qrcode');
+  const url = process.env.PUBLIC_URL || 'https://wedding-photos-dbc2.onrender.com';
+  const buffer = await QRCode.toBuffer(url, {
+    width: 200,
+    margin: 1,
+    color: { dark: '#000000', light: '#ffffff' },
+  });
+  res.set('Content-Type', 'image/png');
+  res.set('Cache-Control', 'public, max-age=86400');
+  res.send(buffer);
+});
+
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
