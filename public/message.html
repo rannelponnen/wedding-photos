@@ -763,8 +763,11 @@
 
       const mimeType = blob.type || 'audio/webm';
       const ext = mimeType.includes('mp4') ? 'mp4' : mimeType.includes('ogg') ? 'ogg' : 'webm';
-      const isVideoBlob = mimeType.startsWith('video/');
-      const messageType = isVideoBlob ? 'video' : 'voice';
+      // Use the user's chosen mode as the authoritative message type,
+      // but fall back to mime-type detection for fallback file uploads
+      const messageType = (blob instanceof File)
+        ? (mimeType.startsWith('video/') ? 'video' : 'voice')
+        : mode;
 
       const formData = new FormData();
       formData.append('recording', blob, `message.${ext}`);

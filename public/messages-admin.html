@@ -342,8 +342,8 @@
       allMessages = data.messages || [];
       document.getElementById('loading').style.display = 'none';
 
-      const voice = allMessages.filter(m => (m.tags || []).includes('voice-message')).length;
-      const video = allMessages.filter(m => (m.tags || []).includes('video-message')).length;
+      const voice = allMessages.filter(m => !isVideoMsg(m)).length;
+      const video = allMessages.filter(m => isVideoMsg(m)).length;
       document.getElementById('totalCount').textContent = allMessages.length;
       document.getElementById('voiceCount').textContent = voice;
       document.getElementById('videoCount').textContent = video;
@@ -351,10 +351,17 @@
       applyFilter('all');
     }
 
+    // Reliable check: prefer context (always stored), fall back to tags
+    function isVideoMsg(msg) {
+      const fromContext = msg.context?.custom?.message_type;
+      if (fromContext) return fromContext === 'video';
+      return (msg.tags || []).includes('video-message');
+    }
+
     function applyFilter(type) {
       filtered = type === 'all'
         ? allMessages
-        : allMessages.filter(m => (m.tags || []).includes(type));
+        : allMessages.filter(m => type === 'video-message' ? isVideoMsg(m) : !isVideoMsg(m));
       renderMessages();
     }
 
@@ -369,7 +376,7 @@
       document.getElementById('emptyState').style.display = 'none';
 
       filtered.forEach((msg, index) => {
-        const isVideo = (msg.tags || []).includes('video-message');
+        const isVideo = isVideoMsg(msg);
         const guestName = msg.context?.custom?.guest_name || 'Anonymous Guest';
         const date = new Date(msg.created_at).toLocaleDateString('en-US', {
           month: 'long', day: 'numeric', year: 'numeric',
