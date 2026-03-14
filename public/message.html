@@ -563,7 +563,7 @@
       <div class="success-ornament">
         <div class="s-line"></div><div class="s-diamond"></div><div class="s-line"></div>
       </div>
-      <h3>Thank You</h3>
+      <h3 id="successHeading">Message Sent</h3>
       <p id="successText">Your message has been saved.<br/>Rannel &amp; Roxanne will treasure it forever.</p>
       <button class="another-btn" onclick="leaveAnother()">Leave Another Message</button>
     </div>
@@ -688,7 +688,8 @@
     }
 
     function onRecordingDone() {
-      const type = mediaRecorder ? (mediaRecorder.mimeType || 'audio/webm') : 'audio/webm';
+      const fallback = mode === 'video' ? 'video/webm' : 'audio/webm';
+      const type = mediaRecorder ? (mediaRecorder.mimeType || fallback) : fallback;
       blob = new Blob(chunks, { type });
       const url = URL.createObjectURL(blob);
 
@@ -779,8 +780,9 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Upload failed');
 
-        document.getElementById('successText').textContent =
-          `Your ${messageType} message has been saved.\nRannel & Roxanne will treasure it forever.`;
+        document.getElementById('successHeading').textContent = messageType === 'video' ? 'Video Sent!' : 'Message Sent!';
+        document.getElementById('successText').innerHTML =
+          `Your ${messageType === 'video' ? 'video' : 'voice'} message has been sent!<br/>Rannel &amp; Roxanne will treasure it forever.`;
         state = 'done';
         showPanel('done');
       } catch (err) {

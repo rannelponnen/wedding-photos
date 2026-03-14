@@ -138,8 +138,7 @@ app.post('/message', messageUpload.single('recording'), async (req, res) => {
         {
           folder: 'rannel-roxanne-wedding/messages',
           resource_type: 'video', // Cloudinary uses 'video' for audio too
-          public_id: `msg-${Date.now()}`,
-          format: ext,
+          public_id: `msg-${Date.now()}.${ext}`,
           context: {
             guest_name: guestName,
             message_type: messageType,
