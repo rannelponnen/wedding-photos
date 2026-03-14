@@ -805,14 +805,13 @@
 
     /* ─── Helpers ─── */
     function showPanel(panel) {
-      document.getElementById('recorderPanel').style.display  = (panel === 'idle' || panel === 'recording') ? '' : 'none';
-      document.getElementById('previewPanel').style.display   = panel === 'preview' ? '' : 'none';
-      document.getElementById('sendingPanel').style.display   = panel === 'sending' ? '' : 'none';
-      document.getElementById('successPanel').style.display   = panel === 'done'    ? '' : 'none';
-      // Show recorder panel even during recording
+      document.getElementById('recorderPanel').style.display  = (panel === 'idle' || panel === 'recording') ? 'block' : 'none';
+      document.getElementById('previewPanel').style.display   = panel === 'preview' ? 'block' : 'none';
+      document.getElementById('sendingPanel').style.display   = panel === 'sending' ? 'block' : 'none';
+      document.getElementById('successPanel').style.display   = panel === 'done'    ? 'block' : 'none';
       if (panel === 'idle') {
         resetRecordBtn();
-        document.getElementById('fallbackSection').style.display = checkFallback() ? '' : 'none';
+        document.getElementById('fallbackSection').style.display = checkFallback() ? 'block' : 'none';
       }
     }
 
