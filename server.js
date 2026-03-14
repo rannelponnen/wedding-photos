@@ -216,6 +216,23 @@ app.get('/qr-message-image', async (req, res) => {
   res.send(buffer);
 });
 
+// Cloudinary direct-upload signature — browser uploads straight to Cloudinary
+app.get('/sign-upload', (req, res) => {
+  const guestName = (req.query.guestName || 'Anonymous Guest').replace(/[|=]/g, ' ');
+  const messageType = req.query.messageType === 'video' ? 'video' : 'voice';
+  const timestamp = Math.round(Date.now() / 1000);
+  const folder = 'rannel-roxanne-wedding/messages';
+  const context = `guest_name=${guestName}|message_type=${messageType}`;
+  const tags = `wedding,message,${messageType === 'video' ? 'video-message' : 'voice-message'}`;
+  const paramsToSign = { context, folder, tags, timestamp };
+  const signature = cloudinary.utils.api_sign_request(paramsToSign, process.env.CLOUDINARY_API_SECRET);
+  res.json({
+    signature, timestamp, folder, context, tags,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+  });
+});
+
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 

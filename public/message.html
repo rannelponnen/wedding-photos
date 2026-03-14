@@ -758,27 +758,38 @@
     async function sendMessage() {
       if (!blob) return;
       const guestName = document.getElementById('guestName').value.trim() || 'Anonymous Guest';
-
-      state = 'sending';
-      showPanel('sending');
-
-      const mimeType = blob.type || 'audio/webm';
+      const mimeType = blob.type || (mode === 'video' ? 'video/webm' : 'audio/webm');
       const ext = mimeType.includes('mp4') ? 'mp4' : mimeType.includes('ogg') ? 'ogg' : 'webm';
-      // Use the user's chosen mode as the authoritative message type,
-      // but fall back to mime-type detection for fallback file uploads
       const messageType = (blob instanceof File)
         ? (mimeType.startsWith('video/') ? 'video' : 'voice')
         : mode;
 
-      const formData = new FormData();
-      formData.append('recording', blob, `message.${ext}`);
-      formData.append('guestName', guestName);
-      formData.append('messageType', messageType);
+      state = 'sending';
+      showPanel('sending');
 
       try {
-        const res = await fetch('/message', { method: 'POST', body: formData });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Upload failed');
+        // Get a signed upload token from our server (tiny request)
+        const params = new URLSearchParams({ guestName, messageType });
+        const sigRes = await fetch(`/sign-upload?${params}`);
+        const sig = await sigRes.json();
+        if (!sigRes.ok) throw new Error(sig.error || 'Could not prepare upload');
+
+        // Upload the file directly to Cloudinary — bypasses Render's body size limit
+        const fd = new FormData();
+        fd.append('file', blob, `message.${ext}`);
+        fd.append('api_key', sig.apiKey);
+        fd.append('timestamp', sig.timestamp);
+        fd.append('signature', sig.signature);
+        fd.append('folder', sig.folder);
+        fd.append('context', sig.context);
+        fd.append('tags', sig.tags);
+
+        const uploadRes = await fetch(
+          `https://api.cloudinary.com/v1_1/${sig.cloudName}/video/upload`,
+          { method: 'POST', body: fd }
+        );
+        const data = await uploadRes.json();
+        if (!uploadRes.ok) throw new Error(data.error?.message || 'Upload failed');
 
         document.getElementById('successHeading').textContent = messageType === 'video' ? 'Video Sent!' : 'Message Sent!';
         document.getElementById('successText').innerHTML =
