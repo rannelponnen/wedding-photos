@@ -123,7 +123,12 @@ app.get('/gallery', async (req, res) => {
 });
 
 // Voice / video message upload
-app.post('/message', messageUpload.single('recording'), async (req, res) => {
+app.post('/message', (req, res, next) => {
+  messageUpload.single('recording')(req, res, (err) => {
+    if (err) return res.status(400).json({ error: err.message || 'Upload failed' });
+    next();
+  });
+}, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No recording uploaded' });
 
   const guestName = req.body.guestName || 'Anonymous Guest';
@@ -138,7 +143,8 @@ app.post('/message', messageUpload.single('recording'), async (req, res) => {
         {
           folder: 'rannel-roxanne-wedding/messages',
           resource_type: 'video', // Cloudinary uses 'video' for audio too
-          public_id: `msg-${Date.now()}.${ext}`,
+          public_id: `msg-${Date.now()}`,
+          format: ext,
           context: {
             guest_name: guestName,
             message_type: messageType,
